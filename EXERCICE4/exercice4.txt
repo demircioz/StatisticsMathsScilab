@@ -1,0 +1,65 @@
+//////////////////////////////////////////////////////////////////////////////
+// SAÉ S2.04 – Ex4 : Impact de l’usage sur la performance académique
+//////////////////////////////////////////////////////////////////////////////
+
+donnees = csvRead("data.csv", ",", [], "string");
+usage   = strtod(donnees(2:$, 6));    // Avg_Daily_Usage_Hours
+perf    = donnees(2:$, 8);            // Affects_Academic_Performance
+
+// Création des 4 groupes d’usage
+grp = zeros(length(usage), 1);
+grp(usage <  2) = 1;
+grp(usage >= 2 & usage < 4) = 2;
+grp(usage >= 4 & usage < 6) = 3;
+grp(usage >= 6) = 4;
+
+// Comptage Yes/No par groupe
+M = zeros(4,2);
+for i = 1:4
+    idx = find(grp == i);
+    M(i,1) = sum(perf(idx) == "Yes");
+    M(i,2) = sum(perf(idx) == "No");
+end
+
+// Tracé
+scf(0); clf();
+h = bar(M);
+set(h, "thickness", 0);
+xtitle("Impact de l’usage quotidien sur la performance académique", ...
+       "Tranche d’usage", "Effectif");
+xgrid();
+
+// Labels enrichis avec les heures
+a = gca();
+cats = [
+    "Faible (0-2h)"      ;
+    "Modérée (2-4h)"     ;
+    "Élevée (4-6h)"      ;
+    "Très élevé (6-12h)"
+];
+a.x_ticks = tlist(["ticks","locations","labels"], (1:4)', cats);
+legend(["Yes","No"], "in_upper_right");
+
+
+
+
+Analyse / Comparaison graphique : 
+
+
+Sur le barplot que vous avez réalisé pour Ex4, on voit nettement l’influence de la durée d’usage :
+
+Usage faible (0–2 h) : quasi aucun étudiant n’a ses résultats affectés (« Yes »=0, « No »=1) – indicateur sans force statistique ici (effectif =1).
+
+Usage modéré (2–4 h) : très majoritairement sans impact (« No »≈132 vs « Yes »≈21), ce qui suggère qu’un usage intermédiaire n’entrave pas les performances.
+
+Usage élevé (4–6 h) : inverse complet, avec 282 Yes contre 119 No – la majorité voit son académique affecté dès qu’on dépasse 4 h.
+
+Usage très élevé (6–12 h) : 100 % Yes (150 étudiants), ce qui confirme qu’un usage massif conduit systématiquement à une dégradation académique.
+
+Conclusion visuelle :
+
+Jusqu’à 4 h/jour, l’impact reste limité.
+
+Au-delà de 4 h, le risque « Yes » explose et devient quasi total à partir de 6 h.
+
+Cette rupture nette à 4 h est un point clé à souligner dans votre analyse.
